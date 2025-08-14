@@ -1,59 +1,73 @@
-# Todos
+# Présentation de output()
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.5.
 
-## Development server
+## Communication Enfant > Parent avec output()
 
-To start a local development server, run:
+La fonction output() d'Angular est utilisée pour marquer une propriété comme un événement émis par un composant.
 
-```bash
-ng serve
+Cela permet à un composant enfant de notifier son parent qu’une action a eu lieu, en émettant des données ou des événements à travers un mécanisme réactif.
+
+La fonction output() s’appuie sur les signaux.
+
+## Syntaxe et fonctionnement de output()
+
+Syntaxe
+```
+propriete = output<Type>();
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+- Type : définit le type des données émises par l'événement
+- Contrairement à input(), il n'y a pas de valeur par défaut à définir. La propriété émet un signal réactif uniquement lorsque vous le déclenchez explicitement.
 
-## Code scaffolding
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Fonctionnement
 
-```bash
-ng generate component component-name
+***Création de l’événement :*** avec output(), vous déclarez une propriété réactive qui agit comme un canal pour émettre des événements.
+
+***Émission de l’événement :*** l’événement est émis avec la méthode emit().
+
+***Liaison dans le parent :*** le parent peut écouter cet événement avec (nomDeLEvenement)="action()".
+
+## Exemple simple
+Composant enfant
+
 ```
+import { Component, output } from '@angular/core';
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+@Component({
+  selector: 'app-button',
+  template: `
+    <button (click)="notifyParent()">Cliquez ici</button>
+  `,
+})
+export class ButtonComponent {
+  buttonClicked = output<string>();
 
-```bash
-ng generate --help
+  notifyParent() {
+    this.buttonClicked.emit('Le bouton a été cliqué !');
+  }
+}
 ```
+*buttonClicked* : une propriété marquée avec *output()* pour signaler un événement.
 
-## Building
+La méthode *notifyParent()* met à jour la valeur du signal, émettant ainsi l'événement *"Le bouton a été cliqué !"*.
 
-To build the project run:
+Composant parent
 
-```bash
-ng build
-```
+```import { Component } from '@angular/core';
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+@Component({
+  selector: 'app-root',
+  template: `
+    <app-button (buttonClicked)="handleEvent($event)"></app-button>
+  `,
+})
+export class AppComponent {
+  handleEvent(message: string) {
+    console.log('Événement reçu :', message);
+  }
+}```
 
-## Running unit tests
+Le parent écoute l’événement *buttonClicked* avec *(buttonClicked)="handleEvent($event)"*.
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+La méthode *handleEvent()* traite la valeur transmise par l'enfant.
