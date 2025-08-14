@@ -1,59 +1,59 @@
-# Todos
+# Présentation de input()
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.5.
+## Communication Parent > Enfant avec input()
 
-## Development server
+La fonction input() est utilisée pour marquer une propriété d'un composant comme recevant des données externes.
 
-To start a local development server, run:
+Cela permet à un composant enfant de recevoir des valeurs transmises par son parent via des liaisons de propriété.
 
-```bash
-ng serve
+Ainsi avec input(), vous déclarez une propriété comme "entrée" dans le composant enfant. Lorsque le composant parent transmet une valeur à cette propriété, Angular met automatiquement à jour le composant enfant à chaque modification.
+
+## Syntaxe de input()
+
+```
+propriete = input<Type>(valeurParDefaut);
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+- Type : Spécifie le type des données attendues (ex. : string, number, object, etc.).
+- valeurParDefaut (facultatif) : Permet de définir une valeur par défaut si aucune donnée n'est transmise.
 
-## Code scaffolding
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Exemple basique
 
-```bash
-ng generate component component-name
+Composant Parent
+```
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-todos-list',
+  template: `
+    <ul>
+      <app-todo [task]="'Ranger la maison'"></app-todo>
+      <app-todo></app-todo> <!-- Utilisera la valeur par défaut -->
+    </ul>
+  `,
+})
+export class TodosListComponent {}
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Le composant parent transmet la chaîne "Ranger la maison" à la propriété task du composant enfant.
+
+Pour le deuxième composant <app-todo>, aucune valeur n’est passée. Angular utilise donc la valeur par défaut "Tâche par défaut".
+
+Composant enfant
 
 ```bash
-ng generate --help
-```
+import { Component, input } from '@angular/core';
 
-## Building
+@Component({
+  selector: 'app-todo',
+  template: `
+    <li>
+      <p>{{ task }}</p>
+    </li>
+  `,
+})
+export class TodoComponent {
+  task = input<string>('Tâche par défaut');
+}```
 
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
